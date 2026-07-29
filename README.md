@@ -46,7 +46,7 @@ This is **not** an auto-booking bot and does **not** store payment or credit-car
    ```bash
    docker compose up --build
    ```
-3. Open http://localhost.
+3. Open http://localhost:8080.
 
 ## Deployment notes
 
