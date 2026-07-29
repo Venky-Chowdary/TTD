@@ -415,7 +415,7 @@ function PilgrimsTab({
             <div key={p.id} className="p-4 rounded-xl border border-slate-200 bg-slate-50 flex items-start justify-between">
               <div>
                 <p className="font-semibold">{p.name}</p>
-                <p className="text-xs text-slate-500">{p.age ? `${p.age} yrs` : ''} {p.gender} • {p.idType}: {p.idNumber}</p>
+                <p className="text-xs text-slate-500">{[p.age ? `${p.age} yrs` : '', p.gender].filter(Boolean).join(' ')} • {p.idType}: {p.idNumber}</p>
                 <p className="text-xs text-slate-500">{p.mobile} • {p.relation}</p>
               </div>
               <button onClick={() => remove(p.id)} className="text-red-500 hover:bg-red-50 p-2 rounded"><Trash2 size={16} /></button>
