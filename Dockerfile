@@ -1,13 +1,13 @@
-FROM node:20-alpine AS build
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-COPY . .
-ARG VITE_API_BASE=""
-ENV VITE_API_BASE=${VITE_API_BASE}
-RUN npm run build
+FROM python:3.11-slim
 
-FROM nginx:alpine
-COPY --from=build /app/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-EXPOSE 80
+WORKDIR /app
+
+COPY pyproject.toml .
+RUN pip install --no-cache-dir -e .
+
+COPY . .
+
+ENV PORT=8000
+EXPOSE 8000
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
