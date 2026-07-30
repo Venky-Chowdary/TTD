@@ -6,6 +6,7 @@ from typing import Annotated, Any, Optional
 from fastapi import Depends, FastAPI, Header, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 import bcrypt
+import httpx
 from jose import JWTError, jwt
 from pydantic import BaseModel, Field
 from pymongo import MongoClient
@@ -76,6 +77,19 @@ class BookingEvent(BaseModel):
     note: str = ""
 
 
+class AvailabilityCheck(BaseModel):
+    url: str = "https://ttdevasthanams.ap.gov.in/home/dashboard"
+    keywords: list[str] = ["available", "book now", "select", "open", "quota", "slots", "proceed"]
+
+
+class AvailabilityReport(BaseModel):
+    url: str
+    text: str = ""
+    keywords: list[str] = []
+    matched: list[str] = []
+    available: bool = False
+
+
 client: MongoClient | None = None
 
 
@@ -120,6 +134,10 @@ def pilgrims_col() -> Collection:
 
 def events_col() -> Collection:
     return db().events
+
+
+def availability_col() -> Collection:
+    return db().availability
 
 
 def current_user(authorization: Annotated[str, Header()]) -> str:
@@ -206,6 +224,50 @@ def delete_event(event_id: str, user_id: str = token_dep):
     if result.deleted_count == 0:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Event not found")
     return {"ok": True}
+
+
+@app.post("/availability/check")
+def check_availability(req: AvailabilityCheck):
+    try:
+        headers = {
+            "User-Agent": (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/120.0.0.0 Safari/537.36"
+            ),
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "en-US,en;q=0.9",
+        }
+        resp = httpx.get(req.url, headers=headers, timeout=15, follow_redirects=True)
+        resp.raise_for_status()
+        text = resp.text.lower()
+        matched = [k for k in req.keywords if k.lower() in text]
+        return {
+            "url": req.url,
+            "status_code": resp.status_code,
+            "checked_at": datetime.utcnow().isoformat(),
+            "available": len(matched) > 0,
+            "matched": matched,
+        }
+    except httpx.HTTPStatusError as e:
+        return {"url": req.url, "error": f"HTTP {e.response.status_code}", "available": False, "matched": []}
+    except httpx.RequestError as e:
+        return {"url": req.url, "error": str(e), "available": False, "matched": []}
+
+
+@app.post("/availability/report")
+def report_availability(report: AvailabilityReport, user_id: str = token_dep):
+    doc = report.model_dump()
+    doc["user_id"] = user_id
+    doc["reported_at"] = datetime.utcnow().isoformat()
+    availability_col().insert_one(doc)
+    return {"ok": True}
+
+
+@app.get("/availability/latest")
+def latest_availability(user_id: str = token_dep):
+    doc = availability_col().find_one({"user_id": user_id}, {"_id": 0, "user_id": 0}, sort=[("reported_at", -1)])
+    return doc or {"available": False, "matched": [], "message": "No reports yet"}
 
 
 if __name__ == "__main__":

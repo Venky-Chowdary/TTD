@@ -55,3 +55,9 @@ export const eventsApi = {
   create: (data: any) => request('/events', { method: 'POST', body: JSON.stringify(data) }),
   remove: (id: string) => request(`/events/${id}`, { method: 'DELETE' }),
 };
+
+export const availabilityApi = {
+  check: (data: any) => request('/availability/check', { method: 'POST', body: JSON.stringify(data) }),
+  latest: () => request('/availability/latest'),
+  report: (data: any) => request('/availability/report', { method: 'POST', body: JSON.stringify(data) }),
+};

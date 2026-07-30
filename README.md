@@ -8,6 +8,7 @@ This is **not** an auto-booking bot and does **not** store payment or credit-car
 - Track TTD quota release times with a live countdown.
 - Generate a console/userscript to pre-fill the official TTD booking form quickly.
 - Generate a Tampermonkey monitor userscript that watches the official TTD page for availability keywords and alerts you immediately.
+- Run a real-time server-side availability check that fetches the public TTD page and scans for availability keywords.
 
 ## Stack
 
@@ -17,7 +18,17 @@ This is **not** an auto-booking bot and does **not** store payment or credit-car
 
 ## Local development
 
-1. Start MongoDB (or use Docker):
+### One-command startup
+
+```bash
+make dev
+```
+
+This starts MongoDB (via Docker), the FastAPI backend, and the Vite frontend. Open http://localhost:5173.
+
+### Manual startup
+
+1. Start MongoDB:
    ```bash
    docker run -d --name ttd-mongo -p 27017:27017 mongo:7
    ```
@@ -25,7 +36,7 @@ This is **not** an auto-booking bot and does **not** store payment or credit-car
 2. Start the backend:
    ```bash
    cd api
-   python -m venv .venv
+   python3 -m venv .venv
    source .venv/bin/activate
    pip install -r requirements.txt
    uvicorn main:app --host 0.0.0.0 --port 8000 --reload
@@ -47,6 +58,12 @@ This is **not** an auto-booking bot and does **not** store payment or credit-car
    docker compose up --build
    ```
 3. Open http://localhost:8080.
+
+## Stopping local services
+
+```bash
+make stop
+```
 
 ## Deployment notes
 
