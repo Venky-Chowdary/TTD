@@ -16,6 +16,7 @@ dist-ssr
 .venv
 __pycache__
 *.pyc
+*.egg-info
 
 # Secrets
 .env
