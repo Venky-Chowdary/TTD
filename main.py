@@ -103,11 +103,7 @@ client: MongoClient | None = None
 async def lifespan(app: FastAPI):
     global client
     client = MongoClient(MONGO_URL, serverSelectionTimeoutMS=5000)
-    try:
-        client.admin.command("ping")
-        print("Connected to MongoDB")
-    except Exception as e:
-        print("MongoDB connection warning:", e)
+    print("MongoDB client created")
     yield
     if client:
         client.close()
