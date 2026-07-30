@@ -97,34 +97,34 @@ fi
 export MONGO_URL="$MONGO_URL"
 
 # Install Python dependencies (prefer venv, fall back to user site-packages).
-if [ -d "api/.venv" ] && [ ! -f "api/.venv/bin/activate" ]; then
+if [ -d ".venv" ] && [ ! -f ".venv/bin/activate" ]; then
   echo "Removing broken venv..."
-  rm -rf api/.venv
+  rm -rf .venv
 fi
 
-if [ ! -d "api/.venv" ]; then
+if [ ! -d ".venv" ]; then
   echo "Creating Python virtual environment..."
-  if "$PYTHON_CMD" -m venv api/.venv 2>/dev/null; then
+  if "$PYTHON_CMD" -m venv .venv 2>/dev/null; then
     echo "venv created."
   else
     echo "Could not create venv. Falling back to --user install."
   fi
 fi
 
-if [ -d "api/.venv" ] && [ -f "api/.venv/bin/activate" ]; then
-  source api/.venv/bin/activate
-  pip install -r api/requirements.txt
+if [ -d ".venv" ] && [ -f ".venv/bin/activate" ]; then
+  source .venv/bin/activate
+  pip install -r requirements.txt
 else
-  "$PYTHON_CMD" -m pip install --user -r api/requirements.txt
+  "$PYTHON_CMD" -m pip install --user -r requirements.txt
 fi
 
 echo "Starting backend..."
-if [ -d "api/.venv" ] && [ -f "api/.venv/bin/uvicorn" ]; then
-  nohup api/.venv/bin/uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload > api.log 2>&1 &
+if [ -d ".venv" ] && [ -f ".venv/bin/uvicorn" ]; then
+  nohup .venv/bin/uvicorn main:app --host 0.0.0.0 --port 8000 --reload > api.log 2>&1 &
 elif command -v uvicorn >/dev/null 2>&1; then
-  nohup uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload > api.log 2>&1 &
+  nohup uvicorn main:app --host 0.0.0.0 --port 8000 --reload > api.log 2>&1 &
 else
-  nohup "$PYTHON_CMD" -m uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload > api.log 2>&1 &
+  nohup "$PYTHON_CMD" -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload > api.log 2>&1 &
 fi
 
 echo "Starting frontend..."

@@ -5,25 +5,17 @@ services:
     volumes:
       - mongo_data:/data/db
 
-  api:
-    build: ./api
+  backend:
+    build: .
     restart: unless-stopped
+    ports:
+      - "8080:8000"
     environment:
       - MONGO_URL=mongodb://mongo:27017
       - JWT_SECRET=${JWT_SECRET:-ttd-dev-secret-change-me}
+      - PORT=8000
     depends_on:
       - mongo
-
-  web:
-    build:
-      context: .
-      args:
-        VITE_API_BASE: ""
-    restart: unless-stopped
-    ports:
-      - "8080:80"
-    depends_on:
-      - api
 
 volumes:
   mongo_data:
