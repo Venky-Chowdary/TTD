@@ -3,8 +3,10 @@ from contextlib import asynccontextmanager
 from datetime import datetime, timedelta
 from typing import Annotated, Any, Optional
 
+import os
 from fastapi import Depends, FastAPI, Header, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 import bcrypt
 import httpx
 from jose import JWTError, jwt
@@ -269,6 +271,9 @@ def latest_availability(user_id: str = token_dep):
     doc = availability_col().find_one({"user_id": user_id}, {"_id": 0, "user_id": 0}, sort=[("reported_at", -1)])
     return doc or {"available": False, "matched": [], "message": "No reports yet"}
 
+
+if os.path.isdir("dist"):
+    app.mount("/", StaticFiles(directory="dist", html=True), name="static")
 
 if __name__ == "__main__":
     import uvicorn
