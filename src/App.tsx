@@ -26,9 +26,10 @@ import { extractTextFromFile } from './ocr';
 import { parseDocumentText } from './parser';
 import { generateConsoleScript, generateUserscript } from './autofill';
 import MonitorTab from './MonitorTab';
+import PossibilitiesTab from './PossibilitiesTab';
 import './index.css';
 
-type Tab = 'dashboard' | 'pilgrims' | 'fill' | 'monitor' | 'help';
+type Tab = 'dashboard' | 'possibilities' | 'pilgrims' | 'fill' | 'monitor' | 'help';
 
 const OFFICIAL_LINKS = [
   { label: 'Dashboard', url: 'https://ttdevasthanams.ap.gov.in/home/dashboard' },
@@ -130,6 +131,7 @@ export default function App() {
           <div className="flex items-center gap-4">
             <nav className="hidden md:flex gap-2">
               <NavButton active={tab === 'dashboard'} onClick={() => setTab('dashboard')} label="Dashboard" icon={<Clock size={18} />} />
+              <NavButton active={tab === 'possibilities'} onClick={() => setTab('possibilities')} label="Possibilities" icon={<BookOpen size={18} />} />
               <NavButton active={tab === 'pilgrims'} onClick={() => setTab('pilgrims')} label="Pilgrims" icon={<Users size={18} />} />
               <NavButton active={tab === 'fill'} onClick={() => setTab('fill')} label="Quick Fill" icon={<FileText size={18} />} />
               <NavButton active={tab === 'monitor'} onClick={() => setTab('monitor')} label="Monitor" icon={<Bell size={18} />} />
@@ -147,6 +149,7 @@ export default function App() {
 
       <main className="mx-auto max-w-6xl px-4 py-6">
         {tab === 'dashboard' && <DashboardTab events={events} nextEvent={nextEvent} countdown={countdown} onChange={refresh} now={now} />}
+        {tab === 'possibilities' && <PossibilitiesTab onChange={refresh} />}
         {tab === 'pilgrims' && <PilgrimsTab pilgrims={pilgrims} onChange={refresh} ocrBusy={ocrBusy} setOcrBusy={setOcrBusy} ocrError={ocrError} setOcrError={setOcrError} />}
         {tab === 'fill' && <FillTab pilgrims={pilgrims} />}
         {tab === 'monitor' && <MonitorTab />}
