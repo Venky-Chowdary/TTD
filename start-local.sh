@@ -8,14 +8,21 @@ MONGO_URL=${MONGO_URL:-mongodb://localhost:27017}
 MONGO_PORT=27017
 MONGO_DATA_DIR=${MONGO_DATA_DIR:-$HOME/.ttd-mongo-data}
 
-# Detect Python.
-PYTHON_CMD=""
-for cmd in python3 python; do
-  if command -v "$cmd" >/dev/null 2>&1; then
-    PYTHON_CMD=$cmd
-    break
+# Detect Python (override with PYTHON_CMD env var).
+if [ -n "$PYTHON_CMD" ]; then
+  if ! command -v "$PYTHON_CMD" >/dev/null 2>&1; then
+    echo "ERROR: PYTHON_CMD=$PYTHON_CMD not found in PATH"
+    exit 1
   fi
-done
+else
+  PYTHON_CMD=""
+  for cmd in python3 python; do
+    if command -v "$cmd" >/dev/null 2>&1; then
+      PYTHON_CMD=$cmd
+      break
+    fi
+  done
+fi
 
 if [ -z "$PYTHON_CMD" ]; then
   echo "ERROR: Python is not installed. Install Python 3.11+ from https://www.python.org/downloads/"
