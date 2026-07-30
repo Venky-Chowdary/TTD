@@ -261,10 +261,10 @@ function DashboardTab({
 
         {showForm && (
           <form onSubmit={add} className="grid md:grid-cols-5 gap-3 mb-4 p-4 bg-slate-50 rounded-xl">
-            <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Event title" className="md:col-span-2 px-3 py-2 rounded border border-slate-300" />
-            <input type="datetime-local" value={datetime} onChange={(e) => setDatetime(e.target.value)} className="px-3 py-2 rounded border border-slate-300" />
-            <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="Official URL" className="md:col-span-2 px-3 py-2 rounded border border-slate-300" />
-            <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="Note" className="md:col-span-3 px-3 py-2 rounded border border-slate-300" />
+            <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Event title" className="md:col-span-2 px-3 py-2 rounded border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400" />
+            <input type="datetime-local" value={datetime} onChange={(e) => setDatetime(e.target.value)} className="px-3 py-2 rounded border border-slate-300 bg-white text-slate-900" />
+            <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="Official URL" className="md:col-span-2 px-3 py-2 rounded border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400" />
+            <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="Note" className="md:col-span-3 px-3 py-2 rounded border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400" />
             <div className="md:col-span-2 flex gap-2">
               <button type="submit" className="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700">Save</button>
               <button type="button" onClick={() => setShowForm(false)} className="px-4 py-2 bg-slate-200 rounded-md hover:bg-slate-300">Cancel</button>
@@ -531,7 +531,7 @@ function Input({ label, value, onChange }: { label: string; value: string; onCha
   return (
     <div>
       <label htmlFor={id} className="block text-sm font-medium text-slate-700">{label}</label>
-      <input id={id} value={value} onChange={(e) => onChange(e.target.value)} className="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+      <input id={id} value={value} onChange={(e) => onChange(e.target.value)} className="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
     </div>
   );
 }
@@ -541,7 +541,7 @@ function Select({ label, value, options, onChange }: { label: string; value: str
   return (
     <div>
       <label htmlFor={id} className="block text-sm font-medium text-slate-700">{label}</label>
-      <select id={id} value={value} onChange={(e) => onChange(e.target.value)} className="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+      <select id={id} value={value} onChange={(e) => onChange(e.target.value)} className="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
         {options.map((o) => (
           <option key={o} value={o}>{o}</option>
         ))}

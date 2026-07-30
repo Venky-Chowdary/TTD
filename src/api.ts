@@ -15,7 +15,6 @@ async function request(path: string, options: RequestInit = {}) {
   const resp = await fetch(url, { ...options, headers });
   if (resp.status === 401) {
     localStorage.removeItem('ttd-token');
-    window.location.reload();
     throw new Error('Unauthorized');
   }
   if (!resp.ok) {

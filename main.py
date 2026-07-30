@@ -10,6 +10,7 @@ load_dotenv()
 
 from fastapi import Depends, FastAPI, Header, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 import bcrypt
 import httpx
@@ -17,6 +18,7 @@ from jose import JWTError, jwt
 from pydantic import BaseModel, Field
 from pymongo import MongoClient
 from pymongo.collection import Collection
+from pymongo.errors import PyMongoError
 from bson import ObjectId
 
 MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017")
@@ -124,6 +126,22 @@ app.add_middleware(
 )
 
 
+@app.exception_handler(PyMongoError)
+def pymongo_exception_handler(request, exc):
+    return JSONResponse(
+        status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        content={"detail": f"Database unavailable: {exc}"},
+    )
+
+
+@app.exception_handler(ValueError)
+def value_error_handler(request, exc):
+    return JSONResponse(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        content={"detail": str(exc)},
+    )
+
+
 def db() -> Any:
     if client is None:
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Database not available")
@@ -146,8 +164,8 @@ def availability_col() -> Collection:
     return db().availability
 
 
-def current_user(authorization: Annotated[str, Header()]) -> str:
-    if not authorization.startswith("Bearer "):
+def current_user(authorization: Annotated[str | None, Header()] = None) -> str:
+    if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Missing token")
     return get_user_id(authorization[7:])
 
