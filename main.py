@@ -102,8 +102,12 @@ client: MongoClient | None = None
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global client
-    client = MongoClient(MONGO_URL, serverSelectionTimeoutMS=5000)
-    print("MongoDB client created")
+    try:
+        client = MongoClient(MONGO_URL, serverSelectionTimeoutMS=5000)
+        print("MongoDB client created")
+    except Exception as e:
+        print("MongoDB client creation failed:", e)
+        client = None
     yield
     if client:
         client.close()
